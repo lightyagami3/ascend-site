@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const FORMSPREE = "https://formspree.io/f/mrervykw";
+const FORMSPREE = "https://formspree.io/f/meevwrwk";
 
 function useInView(t = 0.14) {
   const [v, setV] = useState(false);
@@ -156,9 +156,17 @@ export default function Ascend() {
     setMenuOpen(false);
   }, []);
 
-  const submit = () => {
-    // Formspree submission disabled for now — form falls through to phone/email fallback.
-    setStatus("error");
+  const submit = async () => {
+    setStatus("sending");
+    try {
+      const r = await fetch(FORMSPREE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ ...form, inquiry_type: form.type }),
+      });
+      setStatus(r.ok ? "sent" : "error");
+      if (r.ok) setForm({ name: "", phone: "", email: "", message: "", type: "individual" });
+    } catch { setStatus("error"); }
   };
 
   const NAV = [
